@@ -1,12 +1,13 @@
 package libusb
 
-// #include<usb.h>
+// #cgo LDFLAGS: -lusb
+// #include <usb.h>
 import "C"
-import "unsafe"
 
-import "fmt"
-
-//import "container/list";
+import (
+	"fmt"
+	"unsafe"
+)
 
 func Init() (int, int) {
 	C.usb_init()
@@ -61,7 +62,7 @@ func Enum() []Info {
 type Device struct {
 	*Info
 	handle     *C.usb_dev_handle
-	descriptor _Cstruct_usb_device_descriptor
+	descriptor C.struct_usb_device_descriptor
 	timeout    int
 }
 
@@ -152,7 +153,6 @@ func (self *Device) BulkRead(ep int, dat []byte) int {
 }
 func (self *Device) Configuration(conf int) int {
 	return int(C.usb_set_configuration(self.handle, C.int(conf)))
-	//return int( C.usb_set_configuration( (*C.uint)(123), C.int(conf)) );
 }
 func (self *Device) Interface(ifc int) int {
 	return int(C.usb_claim_interface(self.handle, C.int(ifc)))
